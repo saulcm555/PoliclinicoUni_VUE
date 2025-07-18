@@ -1,0 +1,322 @@
+/* html, body, #app {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    height: 100vh;
+    min-height: 100vh;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scroll solo si es necesario */
+h1 {
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-size: 1.5em;
+    margin: 0;
+    padding: 0;
+}
+
+.topbar {
+    width: 100%;
+    background: #404040;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    height: 60px;
+    box-shadow: 0 1px 8px #0001;
+    padding: 0;
+    margin: 0;
+    border: none;
+    position: fixed;
+    top: 0 ;
+    left: 0;
+    z-index: 2;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+}
+
+.main-btn {
+    background: #6ac7f7;
+    color: #222;
+    border: none;
+    border-radius: 0;
+    font-size: 1.1em;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-weight: 500;
+    height: 100%;
+    padding: 0 28px 0 8px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    outline: none;
+    box-shadow: none;
+    text-decoration: none;
+    margin: 0;
+}
+.main-btn:hover {
+    background: #50b3e3;
+}
+.main-btn .logo-mini {
+    height: 36px;
+    margin-right: 10px;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-right: 24px;
+}
+
+.lang-dropdown {
+    position: relative;
+    margin-left: 16px;
+}
+
+.lang-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-size: 1.05em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    height: 100%;
+    border-radius: 0;
+    outline: none;
+    gap: 6px;
+    transition: background 0.17s;
+}
+.lang-btn .arrow {
+    margin-left: 6px;
+}
+.lang-btn:active,
+.lang-btn:focus {
+    background: #4447;
+}
+.lang-list {
+    position: absolute;
+    right: 0;
+    top: 50px;
+    min-width: 200px;
+    background: #fff;
+    color: #333;
+    border: 1px solid #eee;
+    box-shadow: 0 1px 8px #0001;
+    border-radius: 6px;
+    display: none;
+    z-index: 11;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+.lang-list.show {
+    display: block;
+}
+.lang-list li {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 0.99em;
+}
+.lang-list li:hover {
+    background: #f4f4f4;
+}
+
+/* ================ LOGIN SECTION ================ */
+.login-section {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 60px);
+    background: #f2f3f5;
+    padding: 0;
+    margin-top: 60px;
+}
+
+.login-form {
+    background: #fff;
+    max-width: 500px;
+    width: 100%;
+    margin: 38px 0 0 0;  /* Empuja el formulario hacia arriba */
+    padding: 48px 38px 30px 38px;
+    border-radius: 13px;
+    box-shadow: 0 8px 44px #c4c4c438;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1.18em;
+    padding: 14px 15px;
+    font-family: 'Montserrat', Arial, sans-serif;
+    margin-bottom: 0;
+    background: #f7f7f7;
+    transition: border 0.2s;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+.login-form input:focus {
+    border: 2px solid #6ac7f7;
+    background: #fff;
+}
+.login-btn {
+    background: #404040;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-size: 1.18em;
+    padding: 12px 0;
+    font-weight: 700;
+    margin-top: 3px;
+    cursor: pointer;
+    box-shadow: 0 1px 4px #2221;
+    transition: background 0.17s;
+}
+.login-btn:hover {
+    background: #228be6;
+}
+.forgot {
+    color: #404040;
+    font-size: 1em;
+    text-decoration: none;
+    margin-top: -6px;
+    margin-bottom: 7px;
+    display: block;
+    transition: color 0.16s;
+}
+.forgot:hover {
+    color: #228be6;
+    text-decoration: underline;
+}
+.form-divider {
+    border-top: 1.5px solid #eee;
+    margin: 6px 0 0 0;
+}
+.login-metodo-label {
+    color: #228be6;
+    font-size: 1.22em;
+    font-weight: 500;
+    margin-bottom: -10px;
+    margin-top: 2px;
+}
+
+/* ============ CUSTOM SELECT MÉTODO ============ */
+.custom-select {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Montserrat', Arial, sans-serif;
+    margin-top: 7px;
+    align-items: center;
+    user-select: none;
+    max-width: 100%;
+    width: 100%;
+}
+.select-selected {
+    width: 51%;
+    background: #fff;
+    color: #228be6;
+    padding: 13px 15px 13px 13px;
+    border: 2px solid #228be6;
+    flex-direction: column;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.25em;
+    display: flex;
+    align-items: center;
+    gap: 0px;
+    flex-direction: row;
+    font-weight: 500;
+    transition: box-shadow 0.18s;
+}
+.select-selected.active,
+.select-selected:active,
+.select-selected:focus {
+    box-shadow: 0 2px 10px #91c2ec2c;
+}
+.custom-select .icon {
+    width: 32px;
+    margin-right: 9px;
+    vertical-align: middle;
+}
+.select-items {
+    position: fixed;
+    background: #fff;
+    color: #228be6;
+    border: 2px solid #228be6;
+    display: flex;
+    flex-direction: column;
+    width: 18.5%;
+    z-index: 99;
+    box-shadow: 0 2px 10px #91c2ec2c;
+    font-size: 1.12em;
+    font-weight: 500;
+    border-radius: 5%;
+    margin-top: 78px;
+}
+.select-items div {
+    padding: 13px 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.12s;
+}
+.select-items div:hover {
+    background: #d2f1ff;
+}
+.select-items.select-hide {
+    display: none !important;
+}
+.select-items:not(.select-hide) {
+    display: flex !important;
+}
+
+/* ======= RESPONSIVE ======= */
+@media (max-width: 750px) {
+    .login-form {
+        max-width: 96vw;
+        padding: 18px 5vw 18px 5vw;
+        margin: 24px 0 0 0;
+    }
+    .login-section {
+        min-height: calc(100vh - 60px);
+    }
+}
+@media (max-width: 600px) {
+    .login-form {
+        padding: 18px 3vw 15px 3vw;
+        gap: 10px;
+        margin: 12px 0 0 0;
+    }
+    .topbar {
+        flex-direction: column;
+        height: auto;
+        padding: 0;
+    }
+    .topbar-right {
+        margin-top: 5px;
+        gap: 9px;
+    }
+    .logo-uleam {
+        height: 34px;
+        padding: 0;
+    }
+    .main-btn {
+        padding: 0 9px 0 5px;
+        font-size: 1em;
+        min-width: 120px;
+    }
+}
