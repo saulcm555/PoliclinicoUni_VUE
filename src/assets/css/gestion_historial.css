@@ -103,8 +103,7 @@ body {
 }
 
 /* --------- BLOQUES Y FORMULARIOS --------- */
-.crear-historial,
-.editar-historial,
+.form-historial,
 .form-cita {
     background: #fffde0;
     margin: 22px auto;
@@ -113,8 +112,7 @@ body {
     box-shadow: 0 4px 30px 0 rgba(40,50,70,0.10);
     max-width: 430px;
 }
-.crear-historial h3,
-.editar-historial h3,
+.form-historial h3,
 .form-cita h3 {
     color: #256586;
     margin-bottom: 18px;
@@ -122,8 +120,7 @@ body {
     font-size: 1.2em;
     font-weight: 700;
 }
-.crear-historial label,
-.editar-historial label,
+.form-historial label,
 .form-cita label {
     display: block;
     margin-bottom: 8px;
@@ -131,8 +128,7 @@ body {
     color: #222;
     font-family: 'Montserrat', Arial, sans-serif;
 }
-.crear-historial input,
-.editar-historial input,
+.form-historial input,
 .form-cita input {
     font-size: 1em;
     padding: 6px 10px;
@@ -144,8 +140,7 @@ body {
     outline: none;
     transition: border-color 0.15s;
 }
-.crear-historial input:focus,
-.editar-historial input:focus,
+.form-historial input:focus,
 .form-cita input:focus {
     border-color: #228be6;
 }
@@ -171,7 +166,7 @@ input[type="button"] {
 /* BOTÓN PRIMARIO - AGREGAR */
 button,
 #btn-agregar-cita,
-.crear-historial button,
+.form-historial button,
 .form-cita button,
 .no-historial button {
     background: linear-gradient(90deg,#228be6 70%,#256586 100%);
@@ -179,7 +174,7 @@ button,
 }
 button:hover,
 #btn-agregar-cita:hover,
-.crear-historial button:hover,
+.form-historial button:hover,
 .form-cita button:hover,
 .no-historial button:hover {
     background: linear-gradient(90deg,#256586 80%,#228be6 100%);
@@ -314,8 +309,7 @@ button#btn-cancelar-editar:hover {
 
 /* ---- Responsive ---- */
 @media (max-width: 700px) {
-    .crear-historial,
-    .editar-historial,
+    .form-historial,
     .form-cita,
     .paciente-datos {
         max-width: 98vw;
