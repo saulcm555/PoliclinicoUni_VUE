@@ -45,9 +45,27 @@
             ></div>
             
             <!-- Campos del formulario -->
-            <label>Sexo: <input v-model="formHistorial.sexo" /></label>
+            <label>Sexo: 
+              <select v-model="formHistorial.sexo">
+                <option value="">Seleccione...</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+              </select>
+            </label>
             <label>Fecha de nacimiento: <input type="date" v-model="formHistorial.fechaNacimiento" /></label>
-            <label>Tipo de sangre: <input v-model="formHistorial.tipoSangre" /></label>
+            <label>Tipo de sangre: 
+              <select v-model="formHistorial.tipoSangre">
+                <option value="">Seleccione...</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
+            </label>
             <label>Raza: <input v-model="formHistorial.raza" /></label>
             <label>Teléfono: <input v-model="formHistorial.telefono" /></label>
             <label>Antecedentes familiares: <input v-model="formHistorial.antecedentes" /></label>

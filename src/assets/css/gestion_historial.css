@@ -129,6 +129,7 @@ body {
     font-family: 'Montserrat', Arial, sans-serif;
 }
 .form-historial input,
+.form-historial select,
 .form-cita input {
     font-size: 1em;
     padding: 6px 10px;
@@ -139,10 +140,21 @@ body {
     font-family: 'Montserrat', Arial, sans-serif;
     outline: none;
     transition: border-color 0.15s;
+    background-color: #fff;
 }
 .form-historial input:focus,
+.form-historial select:focus,
 .form-cita input:focus {
     border-color: #228be6;
+}
+
+.form-historial select {
+    cursor: pointer;
+}
+
+.form-historial select option {
+    padding: 5px;
+    font-family: 'Montserrat', Arial, sans-serif;
 }
 
 /* --------- BOTONES --------- */
