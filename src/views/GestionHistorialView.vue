@@ -34,66 +34,31 @@
         <!-- Mensaje de error -->
         <div v-if="mensajeError" class="no-historial">{{ mensajeError }}</div>
 
-        <!-- Crear historial -->
-        <div v-if="mostrarFormulario === 'crear'" class="crear-historial">
-          <h3>Crear historial clínico para {{ pacienteEncontrado.nombre }}</h3>
-          <form @submit.prevent="guardarNuevoHistorial">
+        <!-- Formulario de historial (crear/editar) -->
+        <div v-if="mostrarFormulario === 'crear' || mostrarFormulario === 'editar'" class="form-historial">
+          <h3>{{ mostrarFormulario === 'crear' ? 'Crear' : 'Editar' }} historial clínico para {{ pacienteEncontrado.nombre }}</h3>
+          <form @submit.prevent="guardarHistorial">
             <div
               v-if="erroresFormulario.length"
               class="form-errores"
               v-html="erroresHTML"
             ></div>
+            
+            <!-- Campos del formulario -->
             <label>Sexo: <input v-model="formHistorial.sexo" /></label>
-            <label
-              >Fecha de nacimiento:
-              <input type="date" v-model="formHistorial.fechaNacimiento"
-            /></label>
-            <label
-              >Tipo de sangre: <input v-model="formHistorial.tipoSangre"
-            /></label>
+            <label>Fecha de nacimiento: <input type="date" v-model="formHistorial.fechaNacimiento" /></label>
+            <label>Tipo de sangre: <input v-model="formHistorial.tipoSangre" /></label>
             <label>Raza: <input v-model="formHistorial.raza" /></label>
             <label>Teléfono: <input v-model="formHistorial.telefono" /></label>
-            <label
-              >Antecedentes familiares:
-              <input v-model="formHistorial.antecedentes"
-            /></label>
+            <label>Antecedentes familiares: <input v-model="formHistorial.antecedentes" /></label>
             <label>Alergias: <input v-model="formHistorial.alergias" /></label>
             <label>Doctor: <input v-model="formHistorial.doctor" /></label>
-            <button type="submit">Guardar historial</button>
-          </form>
-        </div>
-
-        <!-- Editar historial -->
-        <div v-if="mostrarFormulario === 'editar'" class="editar-historial">
-          <h3>Editar historial clínico de {{ pacienteEncontrado.nombre }}</h3>
-          <form @submit.prevent="guardarEdicionHistorial">
-            <div
-              v-if="erroresFormulario.length"
-              class="form-errores"
-              v-html="erroresHTML"
-            ></div>
-            <label>Sexo: <input v-model="formHistorial.sexo" /></label>
-            <label
-              >Fecha de nacimiento:
-              <input type="date" v-model="formHistorial.fechaNacimiento"
-            /></label>
-            <label
-              >Tipo de sangre: <input v-model="formHistorial.tipoSangre"
-            /></label>
-            <label>Raza: <input v-model="formHistorial.raza" /></label>
-            <label>Teléfono: <input v-model="formHistorial.telefono" /></label>
-            <label
-              >Antecedentes familiares:
-              <input v-model="formHistorial.antecedentes"
-            /></label>
-            <label>Alergias: <input v-model="formHistorial.alergias" /></label>
-            <label>Doctor: <input v-model="formHistorial.doctor" /></label>
-            <button type="submit">Guardar cambios</button>
-            <button
-              type="button"
-              id="btn-cancelar-editar"
-              @click="mostrarFormulario = ''"
-            >
+            
+            <!-- Botones -->
+            <button type="submit">
+              {{ mostrarFormulario === 'crear' ? 'Guardar historial' : 'Guardar cambios' }}
+            </button>
+            <button v-if="mostrarFormulario === 'editar'" type="button" @click="cancelarFormulario">
               Cancelar
             </button>
           </form>
@@ -254,7 +219,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-// Funciones de validación
+// ================ FUNCIONES DE VALIDACIÓN ================
 function validarFormularioHistorial(datos) {
   let ok = true;
   let mensajes = [];
@@ -293,15 +258,23 @@ function validarFormularioCita(datos) {
   return { ok, mensajes };
 }
 
-// Estado principal
+// ================ VARIABLES REACTIVAS ================
+// Control de acceso y estado general
 const accesoPermitido = ref(true);
 const busqueda = ref("");
 const mensajeError = ref("");
 const mostrarFormulario = ref(""); // '', 'crear', 'editar', 'cita'
+
+// Datos de paciente e historial
 const pacienteEncontrado = ref(null);
 const historialActual = ref(null);
+
+// Control de formularios
 const erroresFormulario = ref([]);
 const citaAbierta = ref(null);
+const indiceCitaEdicion = ref(null);
+
+// Formularios reactivos
 const formHistorial = reactive({
   sexo: "",
   fechaNacimiento: "",
@@ -312,22 +285,22 @@ const formHistorial = reactive({
   alergias: "",
   doctor: "",
 });
+
 const formCita = reactive({
   fecha: "",
   diagnostico: "",
   tratamiento: "",
   receta: "",
 });
-const indiceCitaEdicion = ref(null);
 
-// Utilidad para renderizar errores como HTML
+// ================ COMPUTED PROPERTIES ================
 const erroresHTML = computed(() =>
   erroresFormulario.value.length
     ? erroresFormulario.value.map((m) => `• ${m}`).join("<br>")
     : ""
 );
 
-// Validar que sea doctor
+// ================ INICIALIZACIÓN ================
 onMounted(() => {
   const usuario = JSON.parse(localStorage.getItem("usuarioLogueado") || "null");
   if (!usuario || usuario.rol !== "doctor") {
@@ -336,180 +309,198 @@ onMounted(() => {
   }
 });
 
+// ================ GESTIÓN DE HISTORIALES ================
+
 // Buscar paciente
 function onBuscar() {
-  mensajeError.value = "";
-  mostrarFormulario.value = "";
-  pacienteEncontrado.value = null;
-  historialActual.value = null;
-  citaAbierta.value = null;
-
+  limpiarFormularios();
+  
   const valor = busqueda.value.trim();
   if (!valor) {
     mensajeError.value = "Ingrese una cédula o correo para buscar.";
     return;
   }
-  const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
-  const paciente = usuarios.find(
-    (u) => u.cedula === valor || u.correo === valor
-  );
-  if (!paciente || paciente.rol !== "paciente") {
+
+  const paciente = buscarPaciente(valor);
+  if (!paciente) {
     mensajeError.value = "Paciente no encontrado.";
     return;
   }
-  pacienteEncontrado.value = paciente;
 
-  let historiales = JSON.parse(
-    localStorage.getItem("historialesClinicos") || "[]"
-  );
-  let historia = historiales.find((h) => h.cedula === paciente.cedula);
+  pacienteEncontrado.value = paciente;
+  const historia = buscarHistorial(paciente.cedula);
+  
   if (!historia) {
-    mostrarFormulario.value = "crear";
-    Object.assign(formHistorial, {
-      sexo: paciente.sexo || "",
-      fechaNacimiento: paciente.fechaNacimiento || "",
-      tipoSangre: paciente.tipoSangre || "",
-      raza: paciente.raza || "",
-      telefono: paciente.telefono || "",
-      antecedentes: "",
-      alergias: "",
-      doctor: "Dr. Leonardo Hidalgo",
-    });
-    historialActual.value = null;
-    return;
+    prepararCrearHistorial(paciente);
+  } else {
+    historialActual.value = historia;
   }
-  historialActual.value = historia;
 }
 
-// Guardar nuevo historial
-function guardarNuevoHistorial() {
+// Funciones auxiliares de búsqueda
+function buscarPaciente(valor) {
+  const usuarios = JSON.parse(localStorage.getItem("usuarios") || "[]");
+  return usuarios.find(u => 
+    (u.cedula === valor || u.correo === valor) && u.rol === "paciente"
+  );
+}
+
+function buscarHistorial(cedula) {
+  const historiales = JSON.parse(localStorage.getItem("historialesClinicos") || "[]");
+  return historiales.find(h => h.cedula === cedula);
+}
+
+function prepararCrearHistorial(paciente) {
+  mostrarFormulario.value = "crear";
+  Object.assign(formHistorial, {
+    sexo: paciente.sexo || "",
+    fechaNacimiento: paciente.fechaNacimiento || "",
+    tipoSangre: paciente.tipoSangre || "",
+    raza: paciente.raza || "",
+    telefono: paciente.telefono || "",
+    antecedentes: "",
+    alergias: "",
+    doctor: "Dr. Leonardo Hidalgo",
+  });
+}
+
+// Función unificada para guardar historial (crear o editar)
+function guardarHistorial() {
   erroresFormulario.value = [];
   const { ok, mensajes } = validarFormularioHistorial(formHistorial);
+  
   if (!ok) {
     erroresFormulario.value = mensajes;
     return;
   }
-  let historiales = JSON.parse(
-    localStorage.getItem("historialesClinicos") || "[]"
-  );
-  historiales.push({
-    cedula: pacienteEncontrado.value.cedula,
-    paciente: pacienteEncontrado.value.nombre,
-    ...formHistorial,
-    correo: pacienteEncontrado.value.correo,
-    citas: [],
-  });
+
+  let historiales = JSON.parse(localStorage.getItem("historialesClinicos") || "[]");
+  
+  if (mostrarFormulario.value === "crear") {
+    // Crear nuevo historial
+    historiales.push({
+      cedula: pacienteEncontrado.value.cedula,
+      paciente: pacienteEncontrado.value.nombre,
+      correo: pacienteEncontrado.value.correo,
+      citas: [],
+      ...formHistorial,
+    });
+  } else {
+    // Editar historial existente
+    const idx = historiales.findIndex(h => h.cedula === pacienteEncontrado.value.cedula);
+    if (idx !== -1) {
+      historiales[idx] = { ...historiales[idx], ...formHistorial };
+    }
+  }
+
   localStorage.setItem("historialesClinicos", JSON.stringify(historiales));
+  historialActual.value = historiales.find(h => h.cedula === pacienteEncontrado.value.cedula);
   mostrarFormulario.value = "";
-  historialActual.value = historiales.find(
-    (h) => h.cedula === pacienteEncontrado.value.cedula
-  );
 }
 
-// Editar historial
+// Preparar edición de historial
 function editarHistorial() {
   if (!historialActual.value) return;
   Object.assign(formHistorial, historialActual.value);
   mostrarFormulario.value = "editar";
 }
 
-// Guardar edición de historial
-function guardarEdicionHistorial() {
-  erroresFormulario.value = [];
-  const { ok, mensajes } = validarFormularioHistorial(formHistorial);
-  if (!ok) {
-    erroresFormulario.value = mensajes;
-    return;
-  }
-  let historiales = JSON.parse(
-    localStorage.getItem("historialesClinicos") || "[]"
-  );
-  const idx = historiales.findIndex(
-    (h) => h.cedula === pacienteEncontrado.value.cedula
-  );
-  if (idx !== -1) {
-    historiales[idx] = {
-      ...historiales[idx],
-      ...formHistorial,
-    };
-    localStorage.setItem("historialesClinicos", JSON.stringify(historiales));
-    historialActual.value = historiales[idx];
-    mostrarFormulario.value = "";
-  }
-}
-
 // Eliminar historial
 function eliminarHistorial() {
-  if (confirm("¿Está seguro de eliminar el historial completo?")) {
-    let historiales = JSON.parse(
-      localStorage.getItem("historialesClinicos") || "[]"
-    );
-    historiales = historiales.filter(
-      (h) => h.cedula !== pacienteEncontrado.value.cedula
-    );
-    localStorage.setItem("historialesClinicos", JSON.stringify(historiales));
-    historialActual.value = null;
-    mensajeError.value = "Historial eliminado correctamente.";
-    setTimeout(() => (mensajeError.value = ""), 1600);
-  }
+  if (!confirm("¿Está seguro de eliminar el historial completo?")) return;
+  
+  let historiales = JSON.parse(localStorage.getItem("historialesClinicos") || "[]");
+  historiales = historiales.filter(h => h.cedula !== pacienteEncontrado.value.cedula);
+  
+  localStorage.setItem("historialesClinicos", JSON.stringify(historiales));
+  historialActual.value = null;
+  mensajeError.value = "Historial eliminado correctamente.";
+  setTimeout(() => (mensajeError.value = ""), 1600);
 }
 
-// ----- Citas -----
+// Cancelar formulario
+function cancelarFormulario() {
+  mostrarFormulario.value = "";
+}
+
+// Limpiar todos los formularios y estados
+function limpiarFormularios() {
+  mensajeError.value = "";
+  mostrarFormulario.value = "";
+  pacienteEncontrado.value = null;
+  historialActual.value = null;
+  citaAbierta.value = null;
+  erroresFormulario.value = [];
+}
+
+// ================ GESTIÓN DE CITAS EN HISTORIAL ================
+
 function agregarCita() {
-  indiceCitaEdicion.value = null;
-  formCita.fecha = "";
-  formCita.diagnostico = "";
-  formCita.tratamiento = "";
-  formCita.receta = "";
+  prepararFormularioCita();
   mostrarFormulario.value = "cita";
 }
+
 function editarCita(idx) {
-  indiceCitaEdicion.value = idx;
-  Object.assign(formCita, historialActual.value.citas[idx]);
+  prepararFormularioCita(idx);
   mostrarFormulario.value = "cita";
 }
-function eliminarCita(idx) {
-  if (confirm("¿Seguro de eliminar esta cita?")) {
-    let historiales = JSON.parse(
-      localStorage.getItem("historialesClinicos") || "[]"
-    );
-    const historia = historiales.find(
-      (h) => h.cedula === pacienteEncontrado.value.cedula
-    );
-    if (historia) {
-      historia.citas.splice(idx, 1);
-      localStorage.setItem("historialesClinicos", JSON.stringify(historiales));
-      historialActual.value = historia;
-      citaAbierta.value = null;
-    }
+
+function prepararFormularioCita(indiceEdicion = null) {
+  indiceCitaEdicion.value = indiceEdicion;
+  
+  if (indiceEdicion !== null) {
+    // Editar cita existente
+    Object.assign(formCita, historialActual.value.citas[indiceEdicion]);
+  } else {
+    // Nueva cita
+    Object.assign(formCita, {
+      fecha: "",
+      diagnostico: "",
+      tratamiento: "",
+      receta: "",
+    });
   }
 }
 
-// Guardar cita (agregar o editar)
+function eliminarCita(idx) {
+  if (!confirm("¿Seguro de eliminar esta cita?")) return;
+  
+  const historiales = JSON.parse(localStorage.getItem("historialesClinicos") || "[]");
+  const historia = historiales.find(h => h.cedula === pacienteEncontrado.value.cedula);
+  
+  if (historia) {
+    historia.citas.splice(idx, 1);
+    localStorage.setItem("historialesClinicos", JSON.stringify(historiales));
+    historialActual.value = historia;
+    citaAbierta.value = null;
+  }
+}
+
 function guardarCita() {
   erroresFormulario.value = [];
   const { ok, mensajes } = validarFormularioCita(formCita);
+  
   if (!ok) {
     erroresFormulario.value = mensajes;
     return;
   }
-  let historiales = JSON.parse(
-    localStorage.getItem("historialesClinicos") || "[]"
-  );
-  const historia = historiales.find(
-    (h) => h.cedula === pacienteEncontrado.value.cedula
-  );
-  if (historia) {
-    if (indiceCitaEdicion.value !== null) {
-      historia.citas[indiceCitaEdicion.value] = { ...formCita };
-    } else {
-      historia.citas.push({ ...formCita });
-    }
-    localStorage.setItem("historialesClinicos", JSON.stringify(historiales));
-    historialActual.value = historia;
-    mostrarFormulario.value = "";
-    citaAbierta.value = null;
+
+  const historiales = JSON.parse(localStorage.getItem("historialesClinicos") || "[]");
+  const historia = historiales.find(h => h.cedula === pacienteEncontrado.value.cedula);
+  
+  if (!historia) return;
+
+  if (indiceCitaEdicion.value !== null) {
+    // Editar cita existente
+    historia.citas[indiceCitaEdicion.value] = { ...formCita };
+  } else {
+    // Agregar nueva cita
+    historia.citas.push({ ...formCita });
   }
+
+  localStorage.setItem("historialesClinicos", JSON.stringify(historiales));
+  historialActual.value = historia;
+  cancelarEdicionCita();
 }
 
 function cancelarEdicionCita() {
@@ -517,7 +508,6 @@ function cancelarEdicionCita() {
   citaAbierta.value = null;
 }
 
-// Acordeón citas
 function toggleCita(idx) {
   citaAbierta.value = citaAbierta.value === idx ? null : idx;
 }
